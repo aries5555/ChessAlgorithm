@@ -16,56 +16,37 @@ limitations under the License.
 
 /**
 *Copyright (C), 2017.
-*@file 文件名 cardtype.go (UTF8)
-*@brief 概要说明 德州扑克牌型判断以及大小比较
-*@author 作者 半醉残影 Billikeu
-*@version 版本 1.0.0
-*@date 创建及修改日期 2017/10/17
-*@warning 警示说明 无
-*@History: 修改历史记录列表，每行修改记录应包括修改日期、修改者及修改内容简述
-*<p>时间 版本 作者 说明</p>
+*@file: cardtype.go (UTF8)
+*@brief:
+*@author: Billikeu
+*@version: 1.0.0
+*@date: 2017/10/17
+*@warning
+*@History:
  */
-package dzpk
+package dzpkcardtype
 
 import (
+	"poker"
 	"sort"
-)
-
-// 牌结构
-type PokerCard struct {
-	Color      int32 // 花色
-	CardNumber int32 // 点数
-}
-
-// 牌组
-type CardGroup struct {
-	Card []*PokerCard // 牌组
-}
-
-// Cards are divided into four kinds: spades, diamonds, clubs and hearts.
-const (
-	HEARTS   = 1 // 红桃
-	SPADES   = 2 // 黑桃
-	CLUBS    = 3 // 梅花
-	DIAMONDS = 4 // 方块
 )
 
 // card type 牌型
 const (
-	HIGHCARD = iota
-	ONEPAIR
-	TWOPAIR
-	THREEOFAKING
-	STRIGHT
-	FLUSH
-	FULLHOURSE
-	FOUROFAKING
-	FLUSHSTRIGHT
-	YORALFLUSH
+	HIGHCARD     = 0
+	ONEPAIR      = 1
+	TWOPAIR      = 2
+	THREEOFAKING = 3
+	STRIGHT      = 4
+	FLUSH        = 5
+	FULLHOURSE   = 6
+	FOUROFAKING  = 7
+	FLUSHSTRIGHT = 8
+	YORALFLUSH   = 9
 )
 
 // is Yoralflush 皇家同花顺
-func isYoralFlush(cardGroup *CardGroup) bool {
+func isYoralFlush(cardGroup *poker.CardGroup) bool {
 	cardType, max := isFlushStright(cardGroup)
 	if cardType && max == 14 {
 		return true
@@ -74,12 +55,12 @@ func isYoralFlush(cardGroup *CardGroup) bool {
 }
 
 // isFlushStright 同花顺
-func isFlushStright(cardGroup *CardGroup) (cardType bool, max int32) {
+func isFlushStright(cardGroup *poker.CardGroup) (cardType bool, max int) {
 	if cardGroup.Len() < 5 {
-		return false
+		return false, 0
 	}
 	cardType, color := isFlush(cardGroup)
-	cardGroupSameColor := new(CardGroup)
+	cardGroupSameColor := new(poker.CardGroup)
 	if cardType {
 		for _, cd := range cardGroup.Card {
 			if cd.Color != color {
@@ -92,11 +73,11 @@ func isFlushStright(cardGroup *CardGroup) (cardType bool, max int32) {
 }
 
 // isFourOfAKing 四条
-func isFourOfAKing(cardGroup *CardGroup) (cardType bool, max int32) {
+func isFourOfAKing(cardGroup *poker.CardGroup) (cardType bool, max int) {
 	if cardGroup.Len() < 4 {
 		return false, 0
 	}
-	mapCard := new(map[int32]int32)
+	mapCard := make(map[int]int)
 	for _, cd := range cardGroup.Card {
 		mapCard[cd.CardNumber]++
 	}
@@ -109,15 +90,15 @@ func isFourOfAKing(cardGroup *CardGroup) (cardType bool, max int32) {
 }
 
 // isFullHourse 葫芦
-func isFullHourse(cardGroup *CardGroup) (cardType bool, max int32) {
+func isFullHourse(cardGroup *poker.CardGroup) (cardType bool, max int) {
 	if cardGroup.Len() < 5 {
 		return false, 0
 	}
-	mapCard := new(map[int32]int32)
+	mapCard := make(map[int]int)
 	for _, cd := range cardGroup.Card {
 		mapCard[cd.CardNumber]++
 	}
-	maxThree := 0
+	var maxThree int = 0
 	for cardNumber, sum := range mapCard {
 		if sum == 3 {
 			if maxThree < cardNumber {
@@ -128,7 +109,7 @@ func isFullHourse(cardGroup *CardGroup) (cardType bool, max int32) {
 	if maxThree == 0 {
 		return false, 0
 	}
-	for cardNumber, sum := range mapCard {
+	for _, sum := range mapCard {
 		if sum == maxThree {
 			continue
 		}
@@ -140,11 +121,11 @@ func isFullHourse(cardGroup *CardGroup) (cardType bool, max int32) {
 }
 
 // isFlush 同花
-func isFlush(cardGroup *CardGroup) (cardType bool, color int32) {
+func isFlush(cardGroup *poker.CardGroup) (cardType bool, color int) {
 	if cardGroup.Len() < 5 {
 		return false, 0
 	}
-	mapCard := new(map[int32]int32)
+	mapCard := make(map[int]int)
 	for _, cd := range cardGroup.Card {
 		mapCard[cd.Color]++
 	}
@@ -157,15 +138,15 @@ func isFlush(cardGroup *CardGroup) (cardType bool, color int32) {
 }
 
 // isStright 顺子
-func isStright(cardGroup *CardGroup) (cardType bool, max int32) {
+func isStright(cardGroup *poker.CardGroup) (cardType bool, max int) {
 	if cardGroup.Len() < 5 {
 		return false, 0
 	}
-	mapCard := new(map[int32]int32)
+	mapCard := make(map[int]int)
 	for _, cd := range cardGroup.Card {
 		mapCard[cd.CardNumber]++
 	}
-	tmp := 15
+	var tmp int = 15
 	for i := 14; i > 1; i-- {
 		if mapCard[i] == 0 {
 			tmp = i
@@ -179,11 +160,11 @@ func isStright(cardGroup *CardGroup) (cardType bool, max int32) {
 }
 
 // isThreeOfAKing 三条
-func isThreeOfAKing(cardGroup *CardGroup) (cardType bool, max int32) {
+func isThreeOfAKing(cardGroup *poker.CardGroup) (cardType bool, max int) {
 	if cardGroup.Len() < 3 {
 		return false, 0
 	}
-	mapCard := new(map[int32]int32)
+	mapCard := make(map[int]int)
 	for _, cd := range cardGroup.Card {
 		mapCard[cd.CardNumber]++
 	}
@@ -196,15 +177,15 @@ func isThreeOfAKing(cardGroup *CardGroup) (cardType bool, max int32) {
 }
 
 // isTwoPair 两队
-func isTwoPair(cardGroup *CardGroup) (cardType bool, max int32, min int32) {
+func isTwoPair(cardGroup *poker.CardGroup) (cardType bool, max int, min int) {
 	if cardGroup.Len() < 4 {
-		return false, 0
+		return false, 0, 0
 	}
-	mapCard := new(map[int32]int32)
+	mapCard := make(map[int]int)
 	for _, cd := range cardGroup.Card {
 		mapCard[cd.CardNumber]++
 	}
-	var maxCard, minCard, count int32 = 0, 0, 0
+	var maxCard, minCard, count int = 0, 0, 0
 	for cardNumber, sum := range mapCard {
 		if sum == 2 {
 			count++
@@ -231,11 +212,11 @@ func isTwoPair(cardGroup *CardGroup) (cardType bool, max int32, min int32) {
 }
 
 // isOnePair一对
-func isOnePair(cardGroup *CardGroup) (cardType bool, max int32) {
+func isOnePair(cardGroup *poker.CardGroup) (cardType bool, max int) {
 	if cardGroup.Len() < 2 {
 		return false, 0
 	}
-	mapCard := new(map[int32]int32)
+	mapCard := make(map[int]int)
 	for _, cd := range cardGroup.Card {
 		mapCard[cd.CardNumber]++
 	}
@@ -244,11 +225,11 @@ func isOnePair(cardGroup *CardGroup) (cardType bool, max int32) {
 			return true, cardNumber
 		}
 	}
-	return false
+	return false, 0
 }
 
 // GetCardType 获取牌型
-func GetCardType(cardGroup *CardGroup) int32 {
+func GetCardType(cardGroup *poker.CardGroup) int {
 
 	if isYoralFlush(cardGroup) {
 		return YORALFLUSH
@@ -282,14 +263,14 @@ func GetCardType(cardGroup *CardGroup) int32 {
 		return TWOPAIR
 	}
 	bFlag, _ = isOnePair(cardGroup)
-	if isOnePair(cardGroup) {
+	if bFlag {
 		return ONEPAIR
 	}
 	return HIGHCARD
 }
 
 // CompareCardGroups 比较两副手牌大小，1为大于，0为等于，-1小于
-func CompareCardGroups(left *CardGroup, right *CardGroup) int32 {
+func CompareCardGroups(left *poker.CardGroup, right *poker.CardGroup) int {
 	leftType := GetCardType(left)
 	rightType := GetCardType(right)
 	if leftType > rightType {
@@ -302,7 +283,7 @@ func CompareCardGroups(left *CardGroup, right *CardGroup) int32 {
 }
 
 // compareTheSameType 比价相同牌型大小，1为大于，0为等于，-1小于
-func compareTheSameType(left *CardGroup, right *CardGroup, cardType int32) int32 {
+func compareTheSameType(left *poker.CardGroup, right *poker.CardGroup, cardType int) int {
 	switch cardType {
 	case YORALFLUSH:
 		return 0
@@ -333,6 +314,7 @@ func compareTheSameType(left *CardGroup, right *CardGroup, cardType int32) int32
 			return -1
 		}
 	case FLUSH:
+		_, cardColor := isFlush(left)
 		return compareCardsNumber(left, right, cardColor, 5)
 	case STRIGHT:
 		_, leftMax := isStright(left)
@@ -385,15 +367,15 @@ func compareTheSameType(left *CardGroup, right *CardGroup, cardType int32) int32
 		rightTmpCards := deleteCardsFrom(rightMax, right)
 		return compareCardsNumber(leftTmpCards, rightTmpCards, 0, 3)
 	case HIGHCARD:
-		return compareCardsNumber(leftTmpCards, rightTmpCards, 0, 5)
+		return compareCardsNumber(left, right, 0, 5)
 	default:
 		return 0 //
 	}
 }
 
 // deleteCardsFrom 从card中剔除deleteNumber
-func deleteCardsFrom(deleteNumber int32, card *CardGroup) *CardGroup {
-	returnCard := new(CardGroup)
+func deleteCardsFrom(deleteNumber int, card *poker.CardGroup) *poker.CardGroup {
+	returnCard := new(poker.CardGroup)
 	for _, cd := range card.Card {
 		if cd.CardNumber == deleteNumber {
 			continue
@@ -404,8 +386,8 @@ func deleteCardsFrom(deleteNumber int32, card *CardGroup) *CardGroup {
 }
 
 // compareCardsNumber 比较点数大小，1为大于，0为等于，-1小于
-func compareCardsNumber(leftCard *CardGroup, rightCard *CardGroup, color int32, number int32) int32 {
-	if leftCard.Card.len() < number || rightCard.Card.len() < number {
+func compareCardsNumber(leftCard *poker.CardGroup, rightCard *poker.CardGroup, color int, number int) int {
+	if leftCard.Len() < number || rightCard.Len() < number {
 		return -2
 	}
 	sort.Sort(leftCard)
@@ -413,10 +395,10 @@ func compareCardsNumber(leftCard *CardGroup, rightCard *CardGroup, color int32, 
 
 	if color == 0 {
 		for i := 0; i < number; i++ {
-			if leftCard.Card[i] > rightCard.Card[i] {
+			if leftCard.Card[i].CardNumber > rightCard.Card[i].CardNumber {
 				return 1
 			}
-			if leftCard.Card[i] < rightCard.Card[i] {
+			if leftCard.Card[i].CardNumber < rightCard.Card[i].CardNumber {
 				return -1
 			}
 		}
@@ -426,10 +408,10 @@ func compareCardsNumber(leftCard *CardGroup, rightCard *CardGroup, color int32, 
 			if leftCard.Card[i].Color != color {
 				continue
 			}
-			if leftCard.Card[i] > rightCard.Card[i] {
+			if leftCard.Card[i].CardNumber > rightCard.Card[i].CardNumber {
 				return 1
 			}
-			if leftCard.Card[i] < rightCard.Card[i] {
+			if leftCard.Card[i].CardNumber < rightCard.Card[i].CardNumber {
 				return -1
 			}
 		}
