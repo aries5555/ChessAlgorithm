@@ -17,7 +17,7 @@ limitations under the License.
 /**
 *Copyright (C), 2017.
 *@file: cardtype.go (UTF8)
-*@brief:
+*@brief:德州扑克牌型判断
 *@author: Billikeu
 *@version: 1.0.0
 *@date: 2017/10/17
