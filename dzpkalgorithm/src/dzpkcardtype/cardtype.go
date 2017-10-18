@@ -109,8 +109,8 @@ func isFullHourse(cardGroup *poker.CardGroup) (cardType bool, max int) {
 	if maxThree == 0 {
 		return false, 0
 	}
-	for _, sum := range mapCard {
-		if sum == maxThree {
+	for cardNumber, sum := range mapCard {
+		if cardNumber == maxThree {
 			continue
 		}
 		if sum == 2 || sum == 3 {

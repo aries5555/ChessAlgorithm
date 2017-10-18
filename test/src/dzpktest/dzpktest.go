@@ -8,10 +8,40 @@ import (
 )
 
 func TestVoid() {
+	cards := new(poker.CardGroup)
 
+	card2 := new(poker.PokerCard)
+	card2.CardNumber = 2
+	card2.Color = 3
+	cards.Card = append(cards.Card, card2)
+
+	card3 := new(poker.PokerCard)
+	card3.CardNumber = 2
+	card3.Color = 2
+	cards.Card = append(cards.Card, card3)
+
+	card4 := new(poker.PokerCard)
+	card4.CardNumber = 5
+	card4.Color = 4
+	cards.Card = append(cards.Card, card4)
+
+	card5 := new(poker.PokerCard)
+	card5.CardNumber = 9
+	card5.Color = 4
+	cards.Card = append(cards.Card, card5)
+
+	card1 := new(poker.PokerCard)
+	card1.CardNumber = 2
+	card1.Color = 1
+	cards.Card = append(cards.Card, card1)
+
+	cards.Print()
+	cardType := dzpkcardtype.GetCardType(cards)
+	fmt.Printf("cardType=%02d", cardType)
 }
 func TestCardType() {
-	index := 0
+	count := 5
+
 	for {
 		var CARDTYPE int = -1
 		for {
@@ -21,30 +51,59 @@ func TestCardType() {
 				break
 			}
 		}
+		index := 0
 		for {
-			cardRandomGroup := poker.MakeRandomCards(0, 1, 1, 1)
-			cardRandomGroup.Print()
+			// paizi：皮子个数；king：0无，1有，是否有大小王；begin：A开始值;index：几副牌
+			cardRandomGroup := poker.MakeRandomCards(0, 1, 2, 1)
 			for i := 0; i < 6; i++ {
 				cardsGroup := cardRandomGroup.Deal(5)
 				cardType := dzpkcardtype.GetCardType(cardsGroup)
 				if cardType != CARDTYPE {
 					continue
 				}
-				fmt.Printf("T=%02d:\n", cardType)
+				index++
 				sort.Sort(cardsGroup)
 				cardsGroup.Print()
-				index++
-				if index == 5 {
+				if index > count {
 					break
 				}
 				fmt.Printf("--------------\n")
 			}
-			if index == 5 {
-				index = 0
+			if index > count {
 				break
 			}
 		}
 
 	}
 
+}
+func TestCardTypeRate() {
+
+	count := 50000
+	for a := 0; a < 10; a++ {
+		index, sum := 0, 0
+		for {
+			// paizi：皮子个数；king：0无，1有，是否有大小王；begin：A开始值;index：几副牌
+			cardRandomGroup := poker.MakeRandomCards(0, 0, 2, 1)
+			for i := 0; i < 7; i++ {
+				if sum > count {
+					break
+				}
+				cardsGroup := cardRandomGroup.Deal(7)
+				sum++
+				if sum == count {
+					fmt.Printf("Type=%d,T=%02d,e=%.6f\n", a, sum, float32(index)/float32(sum))
+				}
+				cardType := dzpkcardtype.GetCardType(cardsGroup)
+				if cardType != a {
+					continue
+				}
+				index++
+
+			}
+			if sum > count {
+				break
+			}
+		}
+	}
 }

@@ -9,8 +9,8 @@ func main() {
 
 	poker.TestVoid()
 	//poker.TestMakeCards()
-
-	dzpktest.TestCardType()
 	//dzpktest.TestVoid()
+	dzpktest.TestCardType()
+	//dzpktest.TestCardTypeRate()
 
 }
