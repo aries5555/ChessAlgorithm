@@ -33,16 +33,16 @@ import (
 
 // card type 牌型
 const (
-	HIGHCARD     = 0
-	ONEPAIR      = 1
-	TWOPAIR      = 2
-	THREEOFAKING = 3
-	STRIGHT      = 4
-	FLUSH        = 5
-	FULLHOURSE   = 6
-	FOUROFAKING  = 7
-	FLUSHSTRIGHT = 8
-	YORALFLUSH   = 9
+	HIGHCARD     = 0 //高牌：不是下面9种牌型中的任何一种
+	ONEPAIR      = 1 //一对：手牌+公牌有两张点数一样的牌，并且不是下面8种牌型中的任何一种
+	TWOPAIR      = 2 //两队：手牌+公牌可以组成两队，并且不是下面7种牌型中的任何一种
+	THREEOFAKING = 3 //三条：手牌+公牌有三张点数一样的牌，并且不是下面6种牌型中的任何一种
+	STRIGHT      = 4 //顺子：手牌+公牌至少有5张点数连续，并且不是下面5种牌型中的任何一种
+	FLUSH        = 5 //同花：手牌+公牌至少5张花色连续，并且不是下面4种牌型中的任何一种
+	FULLHOURSE   = 6 //葫芦：手牌+公牌至少有一个三条和一对，并且不是下面3种牌型中的任何一种
+	FOUROFAKING  = 7 //四条：手牌+公牌有4张花色一样，并且不是下面2种牌型中的任何一种
+	FLUSHSTRIGHT = 8 //同花顺：手牌+公牌至少有5张点数连续并且花色一样，并且不是下面1种牌型
+	YORALFLUSH   = 9 //皇家同花顺：手牌+公牌可以同花顺，并且最大牌为A
 )
 
 // is Yoralflush 皇家同花顺
